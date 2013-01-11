@@ -44,75 +44,13 @@ class PrinterStateConnection(tornadio2.SocketConnection, PrinterCallback):
 	def on_message(self, message):
 		pass
 
-	def zChangeCB(self, currentZ):
-		formattedCurrentZ = None
-		if currentZ:
-			formattedCurrentZ = "%.2f mm" % (currentZ)
+	def sendCurrentData(self, data):
+		print("Sending current data...")
+		self.emit("current", data)
 
-		print("Sending zChange...")
-		self.emit("zChange", {"currentZ": formattedCurrentZ})
-
-	def progressChangeCB(self, currentLine, printTimeInSeconds, printTimeLeftInMinutes):
-		formattedPrintTime = None
-		if (printTimeInSeconds):
-			formattedPrintTime = _getFormattedTimeDelta(datetime.timedelta(seconds=printTimeInSeconds))
-
-		formattedPrintTimeLeft = None
-		if (printTimeLeftInMinutes):
-			formattedPrintTimeLeft = _getFormattedTimeDelta(datetime.timedelta(minutes=printTimeLeftInMinutes))
-
-		print("Sending progressChange...")
-		self.emit("printProgress", {
-			"currentLine": currentLine,
-			"printTime": formattedPrintTime,
-			"printTimeLeft": formattedPrintTimeLeft
-		})
-
-	def temperatureChangeCB(self, currentTime, temp, bedTemp, targetTemp, targetBedTemp):
-		print("Sending temperatureChange...")
-		self.emit("temperature", {
-			"currentTime": currentTime,
-			"temp": temp,
-			"bedTemp": bedTemp,
-			"targetTemp": targetTemp,
-			"targetBedTemp": targetBedTemp
-		})
-
-	def stateChangeCB(self, state, stateString, booleanStates):
-		print("Sending stateChange...")
-		self.emit("state", {"currentState": stateString, "flags": booleanStates})
-
-	def logChangeCB(self, line):
-		print("Sending logChange...")
-		self.emit("log", {"line": line})
-
-	def messageChangeCB(self, line):
-		print("Sending messageChange...")
-		self.emit("message", {"line": line})
-
-	def gcodeChangeCB(self, filename, progress):
-		print("Sending gcodeChange...")
-		self.emit("jobData", {"filename": "Loading... (%d%%)" % (round(progress * 100)), "lineCount": None, "estimatedPrintTime": None, "filament": None})
-
-	def jobDataChangeCB(self, filename, lines, estimatedPrintTimeInMinutes, filamentLengthInMillimeters):
-		formattedPrintTimeEstimation = None
-		if estimatedPrintTimeInMinutes:
-			formattedPrintTimeEstimation = _getFormattedTimeDelta(datetime.timedelta(minutes=estimatedPrintTimeInMinutes))
-
-		formattedFilament = None
-		if filamentLengthInMillimeters:
-			formattedFilament = "%.2fm" % (filamentLengthInMillimeters / 1000)
-
-		formattedFilename = None
-		if filename:
-			formattedFilename = filename.replace(UPLOAD_FOLDER + os.sep, "")
-
-		print("Sending jobDataChange...")
-		self.emit("jobData", {"filename": formattedFilename, "lineCount": lines, "estimatedPrintTime": formattedPrintTimeEstimation, "filament": formattedFilament})
-
-	def sendHistoryData(self, tempHistory, logHistory, messageHistory):
+	def sendHistoryData(self, data):
 		print("Sending history...")
-		self.emit("history", {"temperature": tempHistory, "log": logHistory, "message": messageHistory})
+		self.emit("history", data)
 
 #~~ Printer control
 
