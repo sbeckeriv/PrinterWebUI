@@ -1,0 +1,3 @@
+[submodule "printer_webui/static/gcode"]
+	path = printer_webui/static/gcode
+	url = git@github.com:sbeckeriv/gcode-viewer.git
